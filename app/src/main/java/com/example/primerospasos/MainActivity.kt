@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,7 +65,12 @@ fun ListaAlumnos( modifier: Modifier = Modifier) {
         )
     }
 
-    var alumnoSeleccionado by remember { mutableStateOf(listaAlumnos.random()) }
+    var alumnosDisponibles by remember {
+        mutableStateOf(listaAlumnos.toMutableList()) }
+
+    var alumnoSeleccionado by remember {
+        mutableStateOf("Pulsa 'Siguiente'")
+    }
 
 
     Column(
@@ -73,8 +79,6 @@ fun ListaAlumnos( modifier: Modifier = Modifier) {
             .background(Color.Blue),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-
-
     ){
         Text(
             text = "Turno de pregunta: ",
@@ -91,11 +95,37 @@ fun ListaAlumnos( modifier: Modifier = Modifier) {
         )
         Spacer(Modifier.height(32.dp))
         Button(onClick = {
-            alumnoSeleccionado = listaAlumnos.random()
+            if (alumnosDisponibles.isEmpty()) {
+                alumnoSeleccionado = "Lista completa, reiniciando"
+                alumnosDisponibles = listaAlumnos.toMutableList()
+            }else{
+                val proximoAlumno = alumnosDisponibles.random()
+                alumnoSeleccionado = proximoAlumno
+                alumnosDisponibles.remove(proximoAlumno)
+            }
 
-        }) {
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Gray
+        )) {
             Text(
-                text = "Pregunta",
+                text = "Siguiente",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+            )
+        }
+        Spacer(Modifier.height(32.dp))
+        Button(onClick = {
+            alumnosDisponibles = listaAlumnos.toMutableList()
+            alumnoSeleccionado = "Lista reiniciada"
+
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Red
+        )) {
+            Text(
+                text = "Reiniciar lista",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
